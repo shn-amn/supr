@@ -24,7 +24,7 @@ object Main extends IOApp {
       .takeWhile(row => row.nonEmpty && row.head.nonEmpty)
       .evalScan[IO, Triangle](Empty) { (triangle, row) =>
         row traverse parseInt flatMap (triangle ++ _) match {
-          case Left(error) => IO(println(error)) as triangle
+          case Left(error) => IO(println(s"$error Retry!")) as triangle
           case Right(newTriangle) => IO pure newTriangle
         }
       }
@@ -38,7 +38,8 @@ object Main extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] =
     Blocker fromExecutorService IO(Executors newFixedThreadPool 1) use { blocker =>
-      input(blocker) flatMap (triangle => IO(println(composeMinimalPath(triangle))))
+      IO(println("Enter triangle rows and an empty line to finish.")) *>
+        input(blocker) flatMap (triangle => IO(println(composeMinimalPath(triangle))))
     } as ExitCode.Success
 
 }
