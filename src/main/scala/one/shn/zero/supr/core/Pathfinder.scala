@@ -6,8 +6,8 @@ import scala.language.postfixOps
 object Pathfinder {
 
   object Direction extends Enumeration {
-    type Direction = ValueSet
-    val Left, Right = values
+    type Direction = Value
+    val Left, Right = Value
   }
 
   case class BasePointResolution(path: Vector[Direction], sum: Int)
