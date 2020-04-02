@@ -5,7 +5,7 @@ import java.util.concurrent.{ExecutorService, Executors}
 import cats.data.NonEmptyVector
 import cats.effect.{Blocker, ExitCode, IO, IOApp}
 import cats.implicits._
-import fs2.{Stream, io}
+import fs2.{Stream, io, text}
 import one.shn.zero.supr.core.{Empty, Pathfinder, Triangle}
 
 import scala.language.postfixOps
@@ -17,7 +17,9 @@ object Main extends IOApp {
     Try(str.toInt).toEither.left.map(_ => s"Value '$str' is not an integer.")
 
   private def input(blocker: Blocker): IO[Triangle] =
-    io.stdinUtf8[IO](4096, blocker)
+    io.stdin[IO](4096, blocker)
+      .through(text.utf8Decode)
+      .through(text.lines)
       .map(_.stripLineEnd split " +" toVector)
       .takeWhile(row => row.nonEmpty && row.head.nonEmpty)
       .evalScan[IO, Triangle](Empty) { (triangle, row) =>
@@ -26,20 +28,6 @@ object Main extends IOApp {
           case Right(newTriangle) => IO pure newTriangle
         }
       }
-//      .map(_ traverse parseInt)
-//      .evalTap {
-//        case Left(str) => IO(println(s"Value $str is not an integer."))
-//        case _ => IO.pure((): Unit)
-//      }
-//      .mapFilter(_.toOption)
-//      .map(someInts => NonEmptyVector(someInts.head, someInts.tail))
-//      .evalScan[IO, Triangle](Empty) { (triangle, row) =>
-//        row :: triangle match {
-//          case Left(error) => IO(println(error)) as triangle
-//          case Right(newTriangle) => IO pure newTriangle
-//        }
-//      }
-//      .evalTap(x => IO(println(x)))
       .compile.last map (_.get)
 
   override def run(args: List[String]): IO[ExitCode] =
