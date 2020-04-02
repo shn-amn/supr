@@ -6,5 +6,6 @@ scalaVersion := "2.13.1"
 
 val cats = List("cats-core") map ("org.typelevel" %% _ % "2.0.0")
 val tests = List("scalatest") map ("org.scalatest" %% _ % "3.1.1" % "test")
+val shapeless = List("com.chuusai" %% "shapeless" % "2.3.3")
 
-libraryDependencies ++= cats ++ tests
+libraryDependencies ++= cats ++ tests ++ shapeless
