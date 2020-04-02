@@ -30,9 +30,15 @@ object Main extends IOApp {
       }
       .compile.last map (_.get)
 
+  def composeMinimalPath(triangle: Triangle): String = {
+    val minPath = Pathfinder minimalPath triangle
+    val values = Pathfinder pathToValues (triangle, minPath.path)
+    s"""Minimal path is: ${minPath.path mkString " >> "} (${values mkString " + "} = ${minPath.sum})."""
+  }
+
   override def run(args: List[String]): IO[ExitCode] =
     Blocker fromExecutorService IO(Executors newFixedThreadPool 1) use { blocker =>
-      input(blocker) flatMap (x => IO(println(Pathfinder minimalPath x)))
+      input(blocker) flatMap (triangle => IO(println(composeMinimalPath(triangle))))
     } as ExitCode.Success
 
 }

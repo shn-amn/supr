@@ -47,6 +47,25 @@ object Pathfinder {
       }
   }
 
-  def minimalPath(triangle: Triangle) = resolve(triangle) min
+  def minimalPath(triangle: Triangle): BasePointResolution = resolve(triangle).min
+
+  def pathToIndices(path: Seq[Direction]): Seq[Int] = (path scanLeft 0) {
+    case (index, Direction.Left)  => index
+    case (index, Direction.Right) => index + 1
+  }
+
+  def indicesToValues(triangle: Triangle, indices: Seq[Int]): Seq[Int] = {
+    val message = s"Length of indices (${indices.length}) and height of triangle (${triangle.height}) must be the same."
+    assert(triangle.height == indices.length, new IllegalArgumentException(message))
+    def inverseGo(triangle: Triangle, inverseIndices: List[Int]): List[Int] =
+      (inverseIndices, triangle) match {
+        case (head :: tail, Cons(row, peak)) => row.toVector(head) :: inverseGo(peak, tail)
+        case (nil, Empty)                    => Nil
+        case _                               => throw new IllegalStateException(message)
+    }
+    inverseGo(triangle, indices.reverse.toList).reverse
+  }
+
+  def pathToValues(triangle: Triangle, path: Seq[Direction]): Seq[Int] = indicesToValues(triangle, pathToIndices(path))
 
 }
