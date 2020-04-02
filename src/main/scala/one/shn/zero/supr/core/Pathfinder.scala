@@ -17,14 +17,17 @@ object Pathfinder {
     case Empty => Vector.empty
     case Cons(base, peak) =>
       resolve(peak) match {
+
         case emptySolution if emptySolution.isEmpty => // peak is empty and the triangle base is a singleton
           Vector(BasePointResolution(Vector.empty, base.head))
+
         case singletonPeak if singletonPeak.length == 1 => // peak is a singleton and base has two elements
           val peakValue = singletonPeak.head.sum
           Vector(
             BasePointResolution(Vector(Direction.Left), base.head + peakValue),
             BasePointResolution(Vector(Direction.Right), base.last + peakValue)
           )
+
         case longerPeakSolution =>
           val midBase = base.tail dropRight 1
           val midSolution = longerPeakSolution sliding 2 zip midBase map {
