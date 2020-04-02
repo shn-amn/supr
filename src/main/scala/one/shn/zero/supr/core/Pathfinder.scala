@@ -42,7 +42,7 @@ object Pathfinder {
             longerPeakSolution.head.sum + base.head
           ) +: midSolution :+ BasePointResolution(
             longerPeakSolution.last.path :+ Direction.Right,
-            longerPeakSolution.head.sum + base.last
+            longerPeakSolution.last.sum + base.last
           )
       }
   }
